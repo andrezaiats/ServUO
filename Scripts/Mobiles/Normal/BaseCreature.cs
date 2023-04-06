@@ -206,6 +206,35 @@ namespace Server.Mobiles
     {
         public const int MaxLoyalty = 100;
 
+	#region Invasions
+	private Server.Invasions.Invasion _Invasion;
+
+	[CommandProperty(AccessLevel.GameMaster)]
+	public Server.Invasions.Invasion Invasion
+	{
+    		get { return _Invasion; }
+    		set
+    		{
+        		if (_Invasion == value)
+        		{
+            			return;
+        		}
+
+        		if (_Invasion != null)
+        		{
+            			_Invasion.Invaders.Remove(this);
+        		}
+
+        		_Invasion = value;
+
+			if (_Invasion != null)
+        		{
+            			_Invasion.Invaders.Update(this);
+        		}
+    		}
+	}
+	#endregion
+
         private bool _LockDirection;
 
         [CommandProperty(AccessLevel.GameMaster)]
@@ -1824,6 +1853,11 @@ namespace Server.Mobiles
             {
                 Timer.DelayCall(TimeSpan.FromSeconds(10), ((PlayerMobile)@from).RecoverAmmo);
             }
+
+	    if (Invasion != null)
+	    {
+    		Invasion.HandleDamage(this, from, amount);
+	    }
 
             base.OnDamage(amount, from, willKill);
         }
@@ -5443,7 +5477,7 @@ namespace Server.Mobiles
         public virtual double TreasureMapChance => TreasureMap.LootChance;
         public virtual int TreasureMapLevel => -1;
 
-        public virtual bool IgnoreYoungProtection => false;
+        public virtual bool IgnoreYoungProtection { get { return Invasion != null; } }
 
         public override bool OnBeforeDeath()
         {
@@ -5893,6 +5927,11 @@ namespace Server.Mobiles
             else
             {
                 LootingRights = null;
+
+		if (Invasion != null)
+		{
+    			Invasion.HandleKill(this, LastKiller);
+		}
 
                 if (!Summoned && !m_NoKillAwards)
                 {
