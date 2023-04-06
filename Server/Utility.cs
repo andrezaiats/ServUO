@@ -1530,6 +1530,26 @@ namespace Server
 
 		private static readonly Stack<ConsoleColor> m_ConsoleColors = new Stack<ConsoleColor>();
 
+		public static void WriteConsoleColor(ConsoleColor color, string format, params object[] args)
+		{
+			lock (((ICollection)m_ConsoleColors).SyncRoot)
+			{
+				PushColor(color);
+				Console.WriteLine(format, args);
+				PopColor();
+			}
+		}
+
+		public static void WriteConsoleColor(ConsoleColor color, string str)
+		{
+			lock (((ICollection)m_ConsoleColors).SyncRoot)
+			{
+				PushColor(color);
+				Console.WriteLine(str);
+				PopColor();
+			}
+		}
+
 		public static void WriteWarning(string text, params object[] args)
 		{
 			WriteLine(ConsoleColor.Yellow, $"Warning: {text}", args);

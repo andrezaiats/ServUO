@@ -203,6 +203,8 @@ namespace Server
 
 	public delegate void PlayerMurderedEventHandler(PlayerMurderedEventArgs e);
 
+	public delegate void AccountGoldChangeEventHandler(AccountGoldChangeEventArgs e);
+
 	public delegate void AccountCurrencyChangeEventHandler(AccountCurrencyChangeEventArgs e);
 
 	public delegate void AccountSovereignsChangeEventHandler(AccountSovereignsChangeEventArgs e);
@@ -1757,6 +1759,20 @@ namespace Server
 		}
 	}
 
+	public class AccountGoldChangeEventArgs : EventArgs
+	{
+		public IAccount Account { get; set; }
+		public double OldAmount { get; set; }
+		public double NewAmount { get; set; }
+
+		public AccountGoldChangeEventArgs(IAccount account, double oldAmount, double newAmount)
+		{
+			Account = account;
+			OldAmount = oldAmount;
+			NewAmount = newAmount;
+		}
+	}
+
 	public class AccountCurrencyChangeEventArgs : EventArgs
 	{
 		public IAccount Account { get; private set; }
@@ -1945,6 +1961,7 @@ namespace Server
 		public static event KarmaChangeEventHandler KarmaChange;
 		public static event VirtueLevelChangeEventHandler VirtueLevelChange;
 		public static event PlayerMurderedEventHandler PlayerMurdered;
+		public static event AccountGoldChangeEventHandler AccountGoldChange;	
 		public static event AccountCurrencyChangeEventHandler AccountCurrencyChange;
 		public static event AccountSovereignsChangeEventHandler AccountSovereignsChange;
 		public static event AccountSecureChangeEventHandler AccountSecureChange;
@@ -2427,6 +2444,14 @@ namespace Server
 			PlayerMurdered?.Invoke(e);
 		}
 
+		public static void InvokeAccountGoldChange(AccountGoldChangeEventArgs e)
+		{
+			if (AccountGoldChange != null)
+			{
+				AccountGoldChange(e);
+			}
+		}
+
 		public static void InvokeAccountCurrencyChange(AccountCurrencyChangeEventArgs e)
 		{
 			AccountCurrencyChange?.Invoke(e);
@@ -2550,6 +2575,7 @@ namespace Server
 			KarmaChange = null;
 			VirtueLevelChange = null;
 			PlayerMurdered = null;
+			AccountGoldChange = null;
 			AccountCurrencyChange = null;
 			ContainerDroppedTo = null;
 			TeleportMovement = null;

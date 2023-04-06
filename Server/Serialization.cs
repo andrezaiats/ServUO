@@ -160,6 +160,8 @@ namespace Server
 		public abstract void Write(Mobile value);
 		public abstract void Write(BaseGuild value);
 
+		public abstract void WriteMobile<T>(T value) where T : Mobile;
+
 		public abstract void WriteObjectList<T>(ArrayList list, Action<GenericWriter, T> writer);
 
 		public abstract void WriteEntityList(ArrayList list);
@@ -834,6 +836,11 @@ namespace Server
 			}
 
 			WriteItemList(list);
+		}
+
+		public override void WriteMobile<T>(T value)
+		{
+			Write(value);
 		}
 
 		public override void WriteMobileList(ArrayList list)
@@ -2079,6 +2086,11 @@ namespace Server
 			}
 
 			WriteItemList(list);
+		}
+
+		public override void WriteMobile<T>(T value)
+		{
+			Write(value);
 		}
 
 		public override void WriteMobileList(ArrayList list)
